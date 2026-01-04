@@ -65,6 +65,10 @@ if [ -n "${CLAWDBOT_ANTHROPIC_API_KEY:-}" ]; then
   export ANTHROPIC_API_KEY="$CLAWDBOT_ANTHROPIC_API_KEY"
 fi
 
+if [ -n "${CLAWDBOT_TELEGRAM_BOT_TOKEN:-}" ] && [ -z "${TELEGRAM_BOT_TOKEN:-}" ]; then
+  export TELEGRAM_BOT_TOKEN="$CLAWDBOT_TELEGRAM_BOT_TOKEN"
+fi
+
 export CLAWDBOT_CONFIG_PATH="$config_path"
 export CLAWDBOT_STATE_DIR="$data_dir"
 export CLAWDIS_CONFIG_PATH="$config_path"

@@ -87,10 +87,12 @@ This is a Telegram-only, headless gateway. The macOS app is separate.
 Build the image with Determinate Nix (uses a Linux builder under the hood):
 
 ```bash
-nix run .#clawdbot-docker-stream --system aarch64-linux | docker load
-# or (slower, writes a tarball):
+# macOS host (reliable):
 # nix build .#clawdbot-docker --system aarch64-linux
 # docker load < result
+
+# Linux host (fast streaming load):
+# nix run .#clawdbot-docker-stream --system aarch64-linux | docker load
 ```
 
 Run it (state lives in a mounted volume at /data):
