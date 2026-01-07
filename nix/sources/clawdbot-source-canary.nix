@@ -1,4 +1,4 @@
-# Pinned Clawdbot source for nix-clawdbot
+# Canary pin for Clawdbot source (auto-updated by clawdinators).
 {
   owner = "clawdbot";
   repo = "clawdbot";

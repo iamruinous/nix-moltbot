@@ -1,7 +1,16 @@
-{ pkgs }:
+{ pkgs, steipetePkgs ? {} }:
 let
+  lib = pkgs.lib;
   safe = list: builtins.filter (p: p != null) list;
-  pick = name: if builtins.hasAttr name pkgs then pkgs.${name} else null;
+  pickFrom = scope: name:
+    if builtins.hasAttr name scope then
+      let pkg = scope.${name}; in
+      if lib.meta.availableOn pkgs.stdenv.hostPlatform pkg then pkg else null
+    else
+      null;
+  pick = name:
+    let fromSteipete = pickFrom steipetePkgs name; in
+    if fromSteipete != null then fromSteipete else pickFrom pkgs name;
   ensure = names: safe (map pick names);
 
   baseNames = [

@@ -5,27 +5,17 @@
 
 stdenvNoCC.mkDerivation {
   pname = "clawdbot-app";
-  version = "2.0.0-beta4";
+  version = "2.0.0-beta5";
 
   src = fetchzip {
-    url = "https://github.com/clawdbot/clawdbot/releases/download/v2.0.0-beta4/Clawdbot-2.0.0-beta4.zip";
-    hash = "sha256-Oa7cejVFfZtJBSmjDaRjqocVyXo+WeS/xucGpJFDzIg=";
+    url = "https://github.com/clawdbot/clawdbot/releases/download/v2.0.0-beta5/Clawdis-2.0.0-beta5.zip";
+    hash = "sha256-1MrLVS65VOaVgRCCeN7YqLaA8KGSk2C8C+MXpl1qfiQ=";
     stripRoot = false;
   };
 
   dontUnpack = true;
 
-  installPhase = ''
-    runHook preInstall
-    mkdir -p $out/Applications
-    app_path="$(find "$src" -maxdepth 2 -name 'Clawdbot.app' -print -quit)"
-    if [ -z "$app_path" ]; then
-      echo "Clawdbot.app not found in $src" >&2
-      exit 1
-    fi
-    cp -R "$app_path" "$out/Applications/Clawdbot.app"
-    runHook postInstall
-  '';
+  installPhase = "${../scripts/clawdbot-app-install.sh}";
 
   meta = with lib; {
     description = "Clawdbot macOS app bundle";

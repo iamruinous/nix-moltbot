@@ -8,16 +8,12 @@
 , jq
 , python3
 , node-gyp
-, makeWrapper
 , vips
 , git
 , zstd
 , sourceInfo
-, gatewaySrc ? null
 , pnpmDepsHash ? (sourceInfo.pnpmDepsHash or null)
 }:
-
-assert gatewaySrc == null || pnpmDepsHash != null;
 
 let
   sourceFetch = lib.removeAttrs sourceInfo [ "pnpmDepsHash" ];
@@ -37,10 +33,10 @@ let
 in
 
 stdenv.mkDerivation (finalAttrs: {
-  pname = "clawdbot-gateway";
+  pname = "clawdbot-gateway-tests";
   version = "2026.1.5-3";
 
-  src = if gatewaySrc != null then gatewaySrc else fetchFromGitHub sourceFetch;
+  src = fetchFromGitHub sourceFetch;
 
   pnpmDeps = pnpm_10.fetchDeps {
     inherit (finalAttrs) pname version src;
@@ -60,7 +56,6 @@ stdenv.mkDerivation (finalAttrs: {
     jq
     python3
     node-gyp
-    makeWrapper
     zstd
   ];
 
@@ -74,25 +69,18 @@ stdenv.mkDerivation (finalAttrs: {
     npm_config_nodedir = nodejs_22;
     npm_config_python = python3;
     NODE_PATH = "${nodeAddonApi}/lib/node_modules:${node-gyp}/lib/node_modules";
-    NODE_BIN = "${nodejs_22}/bin/node";
     PNPM_DEPS = finalAttrs.pnpmDeps;
     NODE_GYP_WRAPPER_SH = "${../scripts/node-gyp-wrapper.sh}";
     GATEWAY_PREBUILD_SH = "${../scripts/gateway-prebuild.sh}";
     PROMOTE_PNPM_INTEGRITY_SH = "${../scripts/promote-pnpm-integrity.sh}";
     REMOVE_PACKAGE_MANAGER_FIELD_SH = "${../scripts/remove-package-manager-field.sh}";
-    STDENV_SETUP = "${stdenv}/setup";
   };
 
   postPatch = "${../scripts/gateway-postpatch.sh}";
-  buildPhase = "${../scripts/gateway-build.sh}";
-  installPhase = "${../scripts/gateway-install.sh}";
-  dontStrip = true;
+  buildPhase = "${../scripts/gateway-tests-build.sh}";
 
-  meta = with lib; {
-    description = "Telegram-first AI gateway (Clawdbot)";
-    homepage = "https://github.com/clawdbot/clawdbot";
-    license = licenses.mit;
-    platforms = platforms.darwin ++ platforms.linux;
-    mainProgram = "clawdbot";
-  };
+  doCheck = true;
+  checkPhase = "${../scripts/gateway-tests-check.sh}";
+
+  installPhase = "${../scripts/empty-install.sh}";
 })

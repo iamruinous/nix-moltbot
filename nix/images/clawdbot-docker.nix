@@ -5,9 +5,7 @@ let
     version = "1";
     src = ../docker/entrypoint.sh;
     dontUnpack = true;
-    installPhase = ''
-      install -Dm755 $src $out/bin/clawdbot-entrypoint
-    '';
+    installPhase = "${../scripts/docker-entrypoint-install.sh}";
   };
   toolsBase = pkgs.clawdbot-tools-base;
   baseContents = [

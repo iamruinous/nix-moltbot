@@ -16,6 +16,7 @@
 - [Plugins](#plugins)
 - [Configuration](#configuration)
 - [Advanced](#advanced)
+- [Packaging & Updates](#packaging--updates)
 - [Reference](#reference)
 - [Philosophy](#philosophy)
 
@@ -611,6 +612,46 @@ Plugins are keyed by their declared `name`. If two plugins declare the same name
 
 ---
 
+## Packaging & Updates
+
+**Goal:** `nix-clawdbot` is a great Nix package. Automation, promotion, and fleet rollout live elsewhere.
+
+### Stable vs Canary
+
+We ship two pins:
+- **Stable**: last known-good pin. This is the default.
+- **Canary**: auto-updated to upstream commits (throttled to max once every 10 minutes).
+
+Outputs:
+```
+.#clawdbot-stable
+.#clawdbot-gateway-stable
+.#clawdbot-canary
+.#clawdbot-gateway-canary
+```
+
+Pins live in:
+- `nix/sources/clawdbot-source.nix` (stable)
+- `nix/sources/clawdbot-source-canary.nix` (canary)
+
+### Responsibilities (who owns what)
+
+- **clawdbot (upstream)**: source code, tests, releases.
+- **nix-clawdbot**: Nix packaging, pins, CI builds.
+- **clawdinators**: update cadence, smoke tests, promotion, rollout/rollback.
+
+### Automated pipeline (no manual steps)
+
+1) **clawdinators updater** bumps the canary pin (every commit, throttled to 10 minutes).  
+2) **Garnix** builds/tests the package (`pnpm test`).  
+3) **clawdinators smoke test** runs against real Discord in `#clawdinators-test`.  
+4) If green → auto‑promote canary to stable.  
+5) If red → stable stays pinned; canary keeps moving.
+
+This keeps stable always working while tracking upstream fast.
+
+---
+
 ## Reference
 
 ### Commands
@@ -634,7 +675,7 @@ home-manager switch --rollback  # revert
 
 | Package | Contents |
 | --- | --- |
-| `clawdbot` (default) | Gateway + app + full toolchain |
+| `clawdbot` (default) | macOS: gateway + app + tools · Linux: gateway + tools (headless) |
 | `clawdbot-gateway` | Gateway CLI only |
 | `clawdbot-app` | macOS app only |
 | `clawdbot-docker` | OCI image tarball (gateway + tools) |
@@ -654,7 +695,11 @@ home-manager switch --rollback  # revert
 
 ### Included tools
 
+> **Platform note:** the toolchain is filtered per platform. macOS-only tools are skipped on Linux.
+
 **Core**: nodejs, pnpm, git, curl, jq, python3, ffmpeg, ripgrep
+
+**First‑party tools** are sourced from `nix-steipete-tools` when available (currently aarch64‑darwin).
 
 **AI/ML**: openai-whisper, sag (TTS)
 
