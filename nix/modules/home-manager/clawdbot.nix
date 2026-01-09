@@ -294,7 +294,7 @@ let
     systemd = cfg.systemd;
     plugins = cfg.plugins;
     configOverrides = {};
-    config = cfg.config;
+    config = {};
     appDefaults = {
       enable = true;
       attachExistingOnly = true;
@@ -699,11 +699,9 @@ let
     pluginPackages = pluginPackagesFor name;
     pluginEnvAll = pluginEnvAllFor name;
     baseConfig = mkBaseConfig inst.workspaceDir inst;
-    instConfigEval = builtins.tryEval inst.config;
-    instConfig = if instConfigEval.success then instConfigEval.value else {};
     mergedConfig = lib.recursiveUpdate
       (lib.recursiveUpdate baseConfig (lib.recursiveUpdate (mkTelegramConfig inst) (mkRoutingConfig inst)))
-      (lib.recursiveUpdate instConfig inst.configOverrides);
+      inst.configOverrides;
     configJson = builtins.toJSON mergedConfig;
     configFile = pkgs.writeText "clawdbot-${name}.json" configJson;
     gatewayWrapper = pkgs.writeShellScriptBin "clawdbot-gateway-${name}" ''
