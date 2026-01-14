@@ -4,9 +4,20 @@
 }:
 let
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  steipetePkgsPatched =
+    if steipetePkgs ? summarize then
+      steipetePkgs // {
+        summarize = steipetePkgs.summarize.overrideAttrs (old: {
+          env = (old.env or {}) // {
+            PNPM_CONFIG_MANAGE_PACKAGE_MANAGER_VERSIONS = "false";
+          };
+        });
+      }
+    else
+      steipetePkgs;
   toolSets = import ../tools/extended.nix {
     pkgs = pkgs;
-    steipetePkgs = steipetePkgs;
+    steipetePkgs = steipetePkgsPatched;
   };
   clawdbotGateway = pkgs.callPackage ./clawdbot-gateway.nix {
     inherit sourceInfo;
