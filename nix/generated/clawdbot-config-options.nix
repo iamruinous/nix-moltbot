@@ -4309,6 +4309,9 @@ in
       apiKey = lib.mkOption {
         type = t.str;
       };
+      config = lib.mkOption {
+        type = t.attrsOf (t.anything);
+      };
       enabled = lib.mkOption {
         type = t.bool;
       };
