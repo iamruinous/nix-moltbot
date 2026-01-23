@@ -2600,6 +2600,9 @@ in
           policy = lib.mkOption {
             type = t.enum [ "pairing" "allowlist" "open" "disabled" ];
           };
+          replyToMode = lib.mkOption {
+            type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+          };
         }; };
         };
         dmHistoryLimit = lib.mkOption {
@@ -2638,6 +2641,19 @@ in
         };
         replyToMode = lib.mkOption {
           type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+        };
+        replyToModeByChatType = lib.mkOption {
+          type = t.submodule { options = {
+          channel = lib.mkOption {
+            type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+          };
+          direct = lib.mkOption {
+            type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+          };
+          group = lib.mkOption {
+            type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+          };
+        }; };
         };
         requireMention = lib.mkOption {
           type = t.bool;
@@ -2796,6 +2812,9 @@ in
         policy = lib.mkOption {
           type = t.enum [ "pairing" "allowlist" "open" "disabled" ];
         };
+        replyToMode = lib.mkOption {
+          type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+        };
       }; };
       };
       dmHistoryLimit = lib.mkOption {
@@ -2834,6 +2853,19 @@ in
       };
       replyToMode = lib.mkOption {
         type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+      };
+      replyToModeByChatType = lib.mkOption {
+        type = t.submodule { options = {
+        channel = lib.mkOption {
+          type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+        };
+        direct = lib.mkOption {
+          type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+        };
+        group = lib.mkOption {
+          type = t.oneOf [ t.enum [ "off" ] t.enum [ "first" ] t.enum [ "all" ] ];
+        };
+      }; };
       };
       requireMention = lib.mkOption {
         type = t.bool;
